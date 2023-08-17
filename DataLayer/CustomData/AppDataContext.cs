@@ -1,7 +1,9 @@
 ﻿using DataLayer.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -11,11 +13,14 @@ namespace DataLayer.CustomData
 {
     public class AppDataContext : DbContext
     {
+        protected readonly IConfiguration _configuration;
+        public AppDataContext(DbContextOptions<AppDataContext> options) : base(options)
+        {
+        }
         public DbSet<User> User { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);

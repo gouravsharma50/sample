@@ -13,11 +13,10 @@ namespace BusinessLayer.Service
         private readonly AppDataContext _context;
         public IUserRepositories users { get; }
 
-        public UnitOfWork(AppDataContext DbContext,
-            IUserRepositories userRepository)
+        public UnitOfWork(AppDataContext DbContext)
         {
             this._context = DbContext;
-            this.users = userRepository;
+            this.users = new UserRepositories(DbContext);
         }
         public int Complete()
         {
@@ -33,7 +32,7 @@ namespace BusinessLayer.Service
             if (disposing)
             {
                 _context.Dispose();
-            }
+            } 
         }
     }
 }
