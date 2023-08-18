@@ -9,16 +9,25 @@ namespace BusinessLayer.ViewModel
 {
     public class UserRegistrationViewModel : BaseViewModel
     {
-        [Required(ErrorMessage ="*")]
+        [Required(ErrorMessage = "*Required")]
+        [MinLength(2, ErrorMessage = "Min length 2")]
+        [MaxLength(100, ErrorMessage = "Max length 100")]
+        [Display(Name = "First Name")]
         public string FName { get; set; }
-        [Required(ErrorMessage = "*")]
+        [Display(Name = "Last Name")]
+        [Required(ErrorMessage = "*Required")]
+        [MinLength(2, ErrorMessage = "Min length 2")]
+        [MaxLength(100, ErrorMessage = "Max length 100")]
         public string LName { get; set; }
-        [Required(ErrorMessage = "*")]
+        [Required(ErrorMessage = "*Required")]
+        [EmailAddress]
         public string Email { get; set; }
-        [Required(ErrorMessage = "*")]
+        [Required(ErrorMessage = "*Required")]
+        [MaxLength(15, ErrorMessage = "Max length 15")]
+        [MinLength(6, ErrorMessage = "Min length 6")]
         public string Password { get; set; }
         public DateTime LastLogin { get; set; }
-        public string ForgetPasswordGuid { get; set; }
+        public Guid ForgetPasswordGuid { get; set; }
         public DateTime GuidValid { get; set; }
     }
 }

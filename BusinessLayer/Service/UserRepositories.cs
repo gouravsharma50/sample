@@ -66,9 +66,29 @@ namespace BusinessLayer.Service
             }
             else
             {
-                var loginViewModel = new UserLoginViewModel { Email = user.Email, Id = user.Id , CreatedDate= user.CreatedDate, Password= user.Password };
+                var loginViewModel = new UserLoginViewModel { Email = user.Email, Id = user.Id, CreatedDate = user.CreatedDate, ForgetPasswordGuid = user.ForgetPasswordGuid, Password = user.Password };
                 return loginViewModel;
             }
+        }
+        public async Task SetPassword(PasswordManagementViewModel viewModel)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(x => x.Email == viewModel.Email);
+            if (user != null)
+            {
+                if (user.GuidValid < DateTime.Now)
+                {
+
+                    viewModel.ErrorMessage = "Link is invalid";
+                }
+                else
+                {
+                    user.Password = PasswordHash.CreateHash(viewModel.Password);
+                    _context.User.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+                viewModel.ErrorMessage = "No user has found";
         }
 
 

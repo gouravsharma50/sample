@@ -11,6 +11,8 @@ namespace BusinessLayer.Service.Interface
     public interface IUserRepositories : IRepositories<UserRegistrationViewModel>
     {
         Task<UserLoginViewModel> GetUserByEmailAsync(string email);
-        
+        Task SetPassword(PasswordManagementViewModel viewModel);
+
+
     }
 }
