@@ -19,6 +19,6 @@ namespace BusinessLayer.ViewModel
         public bool RememberMe { get; set; }
         public DateTime LastLogin { get; set; }
         public int LoginAttempt { get; set; }
-        public string ForgetPasswordGuid { get; set; }
+        public string? ForgetPasswordGuid { get; set; }
     }
 }

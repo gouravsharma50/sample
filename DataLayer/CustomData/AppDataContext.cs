@@ -18,6 +18,7 @@ namespace DataLayer.CustomData
         {
         }
         public DbSet<User> User { get; set; }
+        public DbSet<CMSModel> CMS { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -25,6 +26,13 @@ namespace DataLayer.CustomData
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Email).IsRequired().IsUnicode();
+            });
+            modelBuilder.Entity<CMSModel>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Page).IsRequired().IsUnicode();
+                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.IsEdit).HasDefaultValue(false);
             });
         }
     }

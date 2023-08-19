@@ -12,11 +12,13 @@ namespace BusinessLayer.Service
     {
         private readonly AppDataContext _context;
         public IUserRepositories users { get; }
+        public ICMSRepositories cms{ get; }
 
         public UnitOfWork(AppDataContext DbContext)
         {
             this._context = DbContext;
             this.users = new UserRepositories(DbContext);
+            this.cms = new CMSRepositories(DbContext);
         }
         public int Complete()
         {

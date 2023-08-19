@@ -1,20 +1,32 @@
 ﻿using BusinessLayer.Service.Interface;
 using BusinessLayer.Utility;
 using BusinessLayer.ViewModel;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
+using SampleWebApp.Auth;
 using System.Runtime.CompilerServices;
 
 namespace SampleWebApp.Controllers
 {
     public class MyAccountController : Controller
     {
-        private IUnitOfWork _unitofWork;
-        public MyAccountController(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork _unitofWork;
+        private readonly AppSettings _appSettings;
+
+        public MyAccountController(IUnitOfWork unitOfWork, IOptions<AppSettings> appSettings)
         {
             _unitofWork = unitOfWork;
+            _appSettings = appSettings.Value;
         }
         public async Task<IActionResult> Login()
         {
+            if(HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Redirect(PageManager.userDashboard);
+            }
             var viewModel = new UserLoginViewModel();
             return View(viewModel);
         }
@@ -42,6 +54,8 @@ namespace SampleWebApp.Controllers
                 }
                 else
                 {
+                    var principal = AuthToken.SetToken(userDetail.Email);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
                     return Redirect(PageManager.userDashboard);
                 }
             }
@@ -133,6 +147,10 @@ namespace SampleWebApp.Controllers
             ViewBag.Email = email;
             return View();
         }
-
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Login");
+        }
     }
 }

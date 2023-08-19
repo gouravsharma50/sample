@@ -9,6 +9,7 @@ namespace BusinessLayer.Service.Interface
     public interface IUnitOfWork : IDisposable
     {
         IUserRepositories users { get; }
+        ICMSRepositories cms { get; }
         int Complete();
     }
 }
