@@ -10,6 +10,6 @@ namespace BusinessLayer.Service.Interface
     {
         Task<T> Get(int id);
         Task Add(T entity);
-
+        Task Update(T entity);
     }
 }

@@ -12,6 +12,7 @@ namespace BusinessLayer.Service.Interface
     {
         Task<UserLoginViewModel> GetUserByEmailAsync(string email);
         Task SetPassword(PasswordManagementViewModel viewModel);
+        Task SetUserLogin(UserLoginViewModel user, bool IsGuidValid = false);
 
 
     }

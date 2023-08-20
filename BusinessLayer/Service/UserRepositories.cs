@@ -40,7 +40,10 @@ namespace BusinessLayer.Service
             await _context.User.AddAsync(user);
             await _context.SaveChangesAsync();
         }
-
+        public Task Update(UserRegistrationViewModel entity)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<UserRegistrationViewModel> Get(int id)
         {
             var user = _context.User.FirstOrDefault(x => x.Id == id);
@@ -83,6 +86,9 @@ namespace BusinessLayer.Service
                 else
                 {
                     user.Password = PasswordHash.CreateHash(viewModel.Password);
+                    user.GuidValid = DateTime.Now;
+                    user.ModifiedDate = DateTime.Now;
+                    user.LoginAttempt = 0;
                     _context.User.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -90,7 +96,18 @@ namespace BusinessLayer.Service
             else
                 viewModel.ErrorMessage = "No user has found";
         }
-
+        public async Task SetUserLogin(UserLoginViewModel userViewModel, bool IsGuidValid = false)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(x => x.Email == userViewModel.Email);
+            if (user != null)
+            {
+                if (IsGuidValid)
+                    user.GuidValid = DateTime.Now.AddMinutes(10);
+                user.LoginAttempt = 0;
+                _context.User.Update(user);
+                await _context.SaveChangesAsync();
+            }
+        }
 
     }
 }

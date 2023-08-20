@@ -23,7 +23,7 @@ namespace SampleWebApp.Controllers
         }
         public async Task<IActionResult> Login()
         {
-            if(HttpContext.User.Identity.IsAuthenticated)
+            if (HttpContext.User.Identity.IsAuthenticated)
             {
                 return Redirect(PageManager.userDashboard);
             }
@@ -39,6 +39,7 @@ namespace SampleWebApp.Controllers
                 viewModel.ErrorMessage = string.Join(" | ", ModelState.Values
          .SelectMany(v => v.Errors)
          .Select(e => e.ErrorMessage));
+                return View(viewModel);
             }
             var userDetail = await _unitofWork.users.GetUserByEmailAsync(viewModel.Email);
             if (userDetail.Id == 0)
@@ -56,6 +57,7 @@ namespace SampleWebApp.Controllers
                 {
                     var principal = AuthToken.SetToken(userDetail.Email);
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                    await _unitofWork.users.SetUserLogin(viewModel);
                     return Redirect(PageManager.userDashboard);
                 }
             }
@@ -97,11 +99,12 @@ namespace SampleWebApp.Controllers
         }
         public async Task<IActionResult> ForgetPassword()
         {
-            var userLogin = new UserLoginViewModel();
+            var userLogin = new ForgetPasswordViewModel();
             return View(userLogin);
         }
         [HttpPost]
-        public async Task<IActionResult> ForgetPassword(UserLoginViewModel viewModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -117,17 +120,20 @@ namespace SampleWebApp.Controllers
             }
             else
             {
-                var url = $"{PageManager.ResetPassword}/{model.Email}";
+                await _unitofWork.users.SetUserLogin(model, true);
+                var url = $"{PageManager.ResetPassword}/{model.Id}";
                 ViewBag.Url = url;
             }
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ResetPassword(string email)
+        public async Task<IActionResult> ResetPassword(int id)
         {
+            var userViewModel = await _unitofWork.users.Get(id);
             var userloginViewModel = new PasswordManagementViewModel()
             {
-                Email = email
+                Email = userViewModel.Email,
+                Id = userViewModel.Id
             };
             return View(userloginViewModel);
         }
@@ -138,7 +144,7 @@ namespace SampleWebApp.Controllers
             await _unitofWork.users.SetPassword(viewModel);
             if (!string.IsNullOrEmpty(viewModel.ErrorMessage))
             {
-                return Redirect($"{PageManager.PasswordSuccess}/{viewModel.Email}");
+                return Redirect($"{PageManager.PasswordSuccess}?email={viewModel.Email}");
             }
             return View(viewModel);
         }

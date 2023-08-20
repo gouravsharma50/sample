@@ -23,8 +23,35 @@ namespace SampleWebApp.Controllers
         }
         public async Task<IActionResult> About()
         {
-            var viewModel =await _unitofWork.cms.GetCMSByPage(AppConstants.AboutPage);
+            var viewModel = await _unitofWork.cms.GetCMSByPage(AppConstants.AboutPage);
             return View(viewModel);
+        }
+        public async Task<IActionResult> EditContent(int Id)
+        {
+            var viewModel = await _unitofWork.cms.Get(Id);
+            return View(viewModel);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditContent(CMSViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                viewModel.ErrorMessage = string.Join(" | ", ModelState.Values
+         .SelectMany(v => v.Errors)
+         .Select(e => e.ErrorMessage));
+                return View(viewModel);
+            }
+            else
+            {
+                if (viewModel.Id == 0)
+                {
+                    await _unitofWork.cms.Add(viewModel);
+                }
+                else
+                    await _unitofWork.cms.Update(viewModel);
+                return RedirectToAction("About");
+            }
         }
     }
 }

@@ -1,0 +1,56 @@
+﻿@model CMSViewModel
+@{
+    ViewData["Title"] = "EditContent";
+}
+<div id="CEdit" class="container-fluid">
+    <section>
+        <form asp-action="EditContent">
+            @Html.HiddenFor(x=>x.Id)
+            @Html.AntiForgeryToken()
+            <div class="container-fluid h-custom">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <h3 class="text-danger">@Model.ErrorMessage</h3>
+                    }
+                    <div class="form-outline mb-8">
+                        @Html.DisplayFor(x=>x.Page, new {@class="form-control form-control-lg"})
+                        @if (Model.Id == 0)
+                        {
+                            @Html.TextBoxFor(x=>x.Page, new {@class="form-control"})
+                            @Html.ValidationMessageFor(x=>x.Page,null, new {@class="text-danger"})
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x=>x.Page)
+                        }
+                    </div>
+
+                    <div class="form-outline mb-8">
+                        @Html.LabelFor(x=>x.Content,new {@class="form-label", @for="Content"})
+                        @Html.TextAreaFor(x=>x.Content)
+                        @Html.ValidationMessageFor(x=>x.Content,null, new {@class="text-danger"})
+                    </div>
+                    <div class="text-center text-lg-start mt-4 pt-2">
+                        <button type="submit" class="btn btn-primary btn-lg"
+                                style="padding-left: 2.5rem; padding-right: 2.5rem;">
+                            @{
+                                var text = Model.Id > 0 ? "Update" : "Add";
+                            }
+                            @text
+                        </button>
+                        <a class="btn btn-secondary btn-lg" asp-action="About"
+                           style="padding-left: 2.5rem; padding-right: 2.5rem;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section scripts {
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script src="~/viewscripts/editcontent.js" asp-append-version="true"></script>
+}
